@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[function($scope) {
+	/* widget controller */
+	var c = this;
+
+	$scope.$on('customEvent', function(event,obj) {
+		c.text = "You clicked "+obj.id;
+		//alert(c.text);
+		c.data.sys_id = obj.id;
+		c.data.action = 'fetchNote';
+		c.server.update().then(function(r){
+			console.log(r);
+			c.note = angular.copy(r.note)
+		});
+	});
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>note_viewer</id>
+        <internal>false</internal>
+        <link/>
+        <name>Note viewer</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	data.note ={};
+	if(input) {
+		if(input.action == 'fetchNote') {
+			$sp.log(input.sys_id);
+			data.id = input.sys_id;
+
+			var gr = new GlideRecord('x_ecsd_notes_notes');
+			if(gr.get(data.id)) {
+				data.note = {
+					number : gr.getValue('number'),
+					user : gr.getDisplayValue('user'),
+					note : gr.getDisplayValue('note'),
+					sys_id : gr.getUniqueValue()
+				};	
+			}
+		}
+	}
+	})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>sachin.gawas</sys_created_by>
+        <sys_created_on>2019-08-19 05:19:22</sys_created_on>
+        <sys_id>1a4c9562db9337809d5259b2ca9619ac</sys_id>
+        <sys_mod_count>30</sys_mod_count>
+        <sys_name>Note viewer</sys_name>
+        <sys_package display_value="Notes" source="x_ecsd_notes">444a912adb1337809d5259b2ca96192b</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Notes">444a912adb1337809d5259b2ca96192b</sys_scope>
+        <sys_update_name>sp_widget_1a4c9562db9337809d5259b2ca9619ac</sys_update_name>
+        <sys_updated_by>sachin.gawas</sys_updated_by>
+        <sys_updated_on>2019-08-19 06:00:22</sys_updated_on>
+        <template><![CDATA[<div class="panel-default">
+  <!-- your widget template -->
+  <div class="panel-heading">
+    Viewer
+  </div>
+  <div class="panel-body">
+    <div>
+      <label class="col-sm-2">Number: </label>
+      <label class="col-sm-6">{{c.note.number}}</label>
+
+      <label class="col-sm-2">User: </label>
+      <label class="col-sm-6">{{c.note.user}}</label>
+
+      <label class="col-sm-2">Note: </label>
+      <label class="col-sm-6">{{c.note.note}}</label>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <button class="btn btn-primary pull-right">
+      ${Edit}
+    </button>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>
